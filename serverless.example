@@ -1,0 +1,62 @@
+service: github-backup-aws
+
+frameworkVersion: '3'
+
+custom:
+  bucket: "" # AWS Bucket name
+  expirationInDays: 90 # Delay in days before delete old backups
+  ghToken: "" # Github Personal Access Token (classic token, with repo and read:org scopes).
+  ghOrganization: "" # Organization name
+  ghVisibility: "all" # private, public or all
+  region: eu-west-3 # AWS Region
+  successPingUrl: "" # URL to ping after backup
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${self:custom.region}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 's3:PutObject'
+          Resource:
+            - arn:aws:s3:::${self:custom.bucket}/*
+
+functions:
+  githubBackup:
+    handler: handler.backup
+    timeout: 300
+    environment:
+      REGION: ${self:custom.region}
+      BUCKET: ${self:custom.bucket}
+      GH_TOKEN: ${self:custom.ghToken}
+      GH_ORGANIZATION: ${self:custom.ghOrganization}
+      GH_VISIBILITY: ${self:custom.ghVisibility}
+      SUCCESS_PING_URL: ${self:custom.successPingUrl}
+    ephemeralStorageSize: 2048
+    events:
+      - schedule: cron(0 2 * * ? *)
+    layers:
+      - arn:aws:lambda:eu-west-3:553035198032:layer:git-lambda2:8
+
+resources:
+  Resources:
+    Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucket}
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        LifecycleConfiguration:
+          Rules:
+            - Id: RemoveOlderBackup
+              Status: Enabled
+              ExpirationInDays: ${self:custom.expirationInDays}

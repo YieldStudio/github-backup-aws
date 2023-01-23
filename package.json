@@ -1,0 +1,14 @@
+{
+  "name": "github-backup-aws",
+  "type": "module",
+  "repository": "https://github.com/YieldStudio/github-backup-aws.git",
+  "author": "James Hemery <james@yieldstudio.fr>",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1299.0",
+    "octokit": "^2.0.13",
+    "rmfr": "^2.0.0",
+    "simple-git": "^3.16.0",
+    "tar": "^6.1.13"
+  }
+}
