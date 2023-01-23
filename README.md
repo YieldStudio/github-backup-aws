@@ -13,7 +13,7 @@ Use AWS S3 and a scheduled Lambda.
 npm install -g serverless
 ```
 
-3Deploy to AWS
+3. Deploy to AWS
 ```
 serverless deploy
 ```
