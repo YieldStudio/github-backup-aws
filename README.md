@@ -6,7 +6,7 @@ Use AWS S3 and a scheduled Lambda.
 
 ## Usage
 
-1. Copy `.serverless.example` and rename it `.serverless` and fill the config variables.
+1. Copy `serverless.yml.example` and rename it `serverless.yml` and fill the config variables.
 
 2. Install [Serverless Framework](https://github.com/serverless/serverless)
 ```
